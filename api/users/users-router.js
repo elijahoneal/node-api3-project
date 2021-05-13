@@ -39,19 +39,22 @@ router.put('/:id', validateUserId, validateUser, (req, res) => {
   // RETURN THE FRESHLY UPDATED USER OBJECT
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
-  User.update(req.body)
-  .then( updateUser => res.status(200).json(updateUser) )
+  const {name} = req.body
+  User.update(req.params.id,name)
+  .then( () => {
+    return User.getById(req.params.id)
+  } )
   .catch(err => {
     console.log(err)
     res.status(500).json({message: 'Something went wrong'})
   })
 });
 
-router.delete('/:id', validateUserId, (req, res) => {
+router.delete('/:id', validateUserId, async (req, res) => {
   // RETURN THE FRESHLY DELETED USER OBJECT
   // this needs a middleware to verify user id
-  User.remove(req.params.id)
-  .then(deleteUser => res.status(200).json(deleteUser))
+ await User.remove(req.params.id)
+  .then(res.status(200).json(req.user))
   .catch(err => {
     console.log(err)
     res.status(500).json({message: 'Something went wrong'})
@@ -61,8 +64,8 @@ router.delete('/:id', validateUserId, (req, res) => {
 router.get('/:id/posts', validateUserId, (req, res) => {
   // RETURN THE ARRAY OF USER POSTS
   // this needs a middleware to verify user id
-  
-  User.getUserPosts(req.params)
+  const { id } = req.body
+  User.getUserPosts(id)
   .then( posts => res.status(200).json(posts) )
   .catch(err => {
     console.log(err)

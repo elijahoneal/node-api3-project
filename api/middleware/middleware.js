@@ -45,7 +45,7 @@ function validatePost(req, res, next) {
   const {text} = req.body
 
   if(!text){
-    res.status(400).json({message: "missing required name field"})
+    res.status(400).json({message: "missing required text"})
   } else {
     req.text = text.trim()
     next()
