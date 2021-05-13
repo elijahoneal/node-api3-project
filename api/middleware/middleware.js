@@ -35,17 +35,19 @@ function validateUser(req, res, next) {
   if(!name){
     res.status(400).json({message: "missing required name field"})
   } else {
+    req.name = name.trim()
     next()
   }
 }
 
 function validatePost(req, res, next) {
   // DO YOUR MAGIC
-  const text = req.body.text
+  const {text} = req.body
 
   if(!text){
     res.status(400).json({message: "missing required name field"})
   } else {
+    req.text = text.trim()
     next()
   }
 }

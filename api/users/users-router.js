@@ -1,5 +1,6 @@
 const express = require('express');
 const User = require('./users-model')
+const Post = require('../posts/posts-model')
 // You will need `users-model.js` and `posts-model.js` both
 // The middleware functions also need to be required
 const {validateUserId, validateUser, validatePost} = require('../middleware/middleware')
@@ -12,12 +13,14 @@ router.get('/', (req, res) => {
   .catch( err  => {
     console.log(err)
     res.status(500).json({ message: 'Something done broke' })
+
   })
 });
 
 router.get('/:id', validateUserId, (req, res) => {
   // RETURN THE USER OBJECT
   // this needs a middleware to verify user id
+  res.json(req.user)
 
 });
 
@@ -58,8 +61,8 @@ router.delete('/:id', validateUserId, (req, res) => {
 router.get('/:id/posts', validateUserId, (req, res) => {
   // RETURN THE ARRAY OF USER POSTS
   // this needs a middleware to verify user id
-  const user = req.users
-  User.getUserPosts(user.id)
+  
+  User.getUserPosts(req.params)
   .then( posts => res.status(200).json(posts) )
   .catch(err => {
     console.log(err)
@@ -71,7 +74,7 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
   // RETURN THE NEWLY CREATED USER POST
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
-  User.insert(req.body)
+  Post.insert(req.body)
   .then( newPost => res.status(201).json(newPost))
   .catch( err => {
     console.log(err)
@@ -79,6 +82,14 @@ router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
   } )
   
 });
+
+// router.use((err, req, res, next) => {
+//   res.status(err.status || 500).json({
+//     customMessage: 'One does not simply run code',
+//     message: err.message,
+//     stack: err.stack
+// })
+// })
 
 // do not forget to export the router
 module.exports = router;
